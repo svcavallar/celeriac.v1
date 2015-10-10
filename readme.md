@@ -1,5 +1,5 @@
 Celeriac
-=======+
+=======
 
 Golang client library for adding support for interacting and monitoring Celery workers and tasks.
 
