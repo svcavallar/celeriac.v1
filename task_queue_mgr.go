@@ -89,7 +89,7 @@ func (taskQueueMgr *TaskQueueMgr) Close() {
 DispatchTask places a new task on the Celery task queue
 Creates a new Task based on the supplied task name and data
 */
-func (taskQueueMgr *TaskQueueMgr) DispatchTask(taskName string, taskData map[string]interface{}) (*Task, error) {
+func (taskQueueMgr *TaskQueueMgr) DispatchTask(taskName string, taskData map[string]interface{}, routingKey string) (*Task, error) {
 	var err error
 
 	task, err := NewTask(taskName, nil, taskData)
@@ -98,8 +98,12 @@ func (taskQueueMgr *TaskQueueMgr) DispatchTask(taskName string, taskData map[str
 		panic(err)
 	}
 
-	err = taskQueueMgr.publishTask(task, ConstTaskDefaultExchangeName, ConstTaskDefaultRoutingKey)
-	log.Infof("Dispatched task [NAME]: %s, [ID]:%s to task queue", taskName, task.ID)
+	if len(routingKey) == 0 || routingKey == "" {
+		routingKey = ConstTaskDefaultRoutingKey
+	}
+
+	err = taskQueueMgr.publishTask(task, ConstTaskDefaultExchangeName, routingKey)
+	log.Infof("Dispatched task [NAME]: %s, [ID]:%s to task queue with [ROUTING KEY]:%s", taskName, task.ID, routingKey)
 
 	return task, err
 }
