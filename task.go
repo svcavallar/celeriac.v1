@@ -43,6 +43,10 @@ func NewTask(taskName string, args []string, kwargs map[string]interface{}) (*Ta
 		return nil, err
 	}
 
+	if args == nil {
+		args = []string{}
+	}
+
 	newTask := Task{
 		TaskName: taskName,
 		ID:       newTaskID.String(),
