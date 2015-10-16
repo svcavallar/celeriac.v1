@@ -13,6 +13,9 @@ const (
 	// ConstTaskDefaultRoutingKey is the default routing key to use when publishing a task
 	ConstTaskDefaultRoutingKey = "celery"
 
+	// ConstTaskControlExchangeName is the exchange name for dispatching task control commands
+	ConstTaskControlExchangeName = "celery.pidbox"
+
 	// ConstEventsMonitorExchangeName is the exchange name used for Celery events
 	ConstEventsMonitorExchangeName = "celeryev"
 
