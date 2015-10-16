@@ -7,6 +7,7 @@ package celeriac
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	fflib "github.com/pquerna/ffjson/fflib/v1"
@@ -14,6 +15,10 @@ import (
 
 func (mj *Event) MarshalJSON() ([]byte, error) {
 	var buf fflib.Buffer
+	if mj == nil {
+		buf.WriteString("null")
+		return buf.Bytes(), nil
+	}
 	err := mj.MarshalJSONBuf(&buf)
 	if err != nil {
 		return nil, err
@@ -21,6 +26,10 @@ func (mj *Event) MarshalJSON() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 func (mj *Event) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
+	if mj == nil {
+		buf.WriteString("null")
+		return nil
+	}
 	var err error
 	var obj []byte
 	_ = obj
@@ -263,7 +272,7 @@ mainparse:
 
 handle_Type:
 
-	/* handler: uj.Type type=string kind=string */
+	/* handler: uj.Type type=string kind=string quoted=false*/
 
 	{
 
@@ -277,7 +286,9 @@ handle_Type:
 
 		} else {
 
-			uj.Type = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Type = string(string(outBuf))
 
 		}
 	}
@@ -287,7 +298,7 @@ handle_Type:
 
 handle_Hostname:
 
-	/* handler: uj.Hostname type=string kind=string */
+	/* handler: uj.Hostname type=string kind=string quoted=false*/
 
 	{
 
@@ -301,7 +312,9 @@ handle_Hostname:
 
 		} else {
 
-			uj.Hostname = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Hostname = string(string(outBuf))
 
 		}
 	}
@@ -311,7 +324,7 @@ handle_Hostname:
 
 handle_Timestamp:
 
-	/* handler: uj.Timestamp type=float32 kind=float32 */
+	/* handler: uj.Timestamp type=float32 kind=float32 quoted=false*/
 
 	{
 		if tok != fflib.FFTok_double && tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -341,7 +354,7 @@ handle_Timestamp:
 
 handle_PID:
 
-	/* handler: uj.PID type=int kind=int */
+	/* handler: uj.PID type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -371,7 +384,7 @@ handle_PID:
 
 handle_Clock:
 
-	/* handler: uj.Clock type=int kind=int */
+	/* handler: uj.Clock type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -401,7 +414,7 @@ handle_Clock:
 
 handle_UTCOffset:
 
-	/* handler: uj.UTCOffset type=int kind=int */
+	/* handler: uj.UTCOffset type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -448,6 +461,10 @@ done:
 
 func (mj *TaskEvent) MarshalJSON() ([]byte, error) {
 	var buf fflib.Buffer
+	if mj == nil {
+		buf.WriteString("null")
+		return buf.Bytes(), nil
+	}
 	err := mj.MarshalJSONBuf(&buf)
 	if err != nil {
 		return nil, err
@@ -455,6 +472,10 @@ func (mj *TaskEvent) MarshalJSON() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 func (mj *TaskEvent) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
+	if mj == nil {
+		buf.WriteString("null")
+		return nil
+	}
 	var err error
 	var obj []byte
 	_ = obj
@@ -497,7 +518,11 @@ func (mj *TaskEvent) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 		buf.WriteString(`,"terminated":false`)
 	}
 	buf.WriteString(`,"signum":`)
-	fflib.FormatBits2(buf, uint64(mj.Signum), 10, mj.Signum < 0)
+	/* Interface types must use runtime reflection. type=interface {} kind=interface */
+	err = buf.Encode(mj.Signum)
+	if err != nil {
+		return err
+	}
 	if mj.Expired {
 		buf.WriteString(`,"expired":true`)
 	} else {
@@ -981,7 +1006,7 @@ mainparse:
 
 handle_Type:
 
-	/* handler: uj.Type type=string kind=string */
+	/* handler: uj.Type type=string kind=string quoted=false*/
 
 	{
 
@@ -995,7 +1020,9 @@ handle_Type:
 
 		} else {
 
-			uj.Type = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Type = string(string(outBuf))
 
 		}
 	}
@@ -1005,7 +1032,7 @@ handle_Type:
 
 handle_Hostname:
 
-	/* handler: uj.Hostname type=string kind=string */
+	/* handler: uj.Hostname type=string kind=string quoted=false*/
 
 	{
 
@@ -1019,7 +1046,9 @@ handle_Hostname:
 
 		} else {
 
-			uj.Hostname = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Hostname = string(string(outBuf))
 
 		}
 	}
@@ -1029,7 +1058,7 @@ handle_Hostname:
 
 handle_Timestamp:
 
-	/* handler: uj.Timestamp type=float32 kind=float32 */
+	/* handler: uj.Timestamp type=float32 kind=float32 quoted=false*/
 
 	{
 		if tok != fflib.FFTok_double && tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -1059,7 +1088,7 @@ handle_Timestamp:
 
 handle_PID:
 
-	/* handler: uj.PID type=int kind=int */
+	/* handler: uj.PID type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -1089,7 +1118,7 @@ handle_PID:
 
 handle_Clock:
 
-	/* handler: uj.Clock type=int kind=int */
+	/* handler: uj.Clock type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -1119,7 +1148,7 @@ handle_Clock:
 
 handle_UTCOffset:
 
-	/* handler: uj.UTCOffset type=int kind=int */
+	/* handler: uj.UTCOffset type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -1149,7 +1178,7 @@ handle_UTCOffset:
 
 handle_UUID:
 
-	/* handler: uj.UUID type=string kind=string */
+	/* handler: uj.UUID type=string kind=string quoted=false*/
 
 	{
 
@@ -1163,7 +1192,9 @@ handle_UUID:
 
 		} else {
 
-			uj.UUID = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.UUID = string(string(outBuf))
 
 		}
 	}
@@ -1173,7 +1204,7 @@ handle_UUID:
 
 handle_Name:
 
-	/* handler: uj.Name type=string kind=string */
+	/* handler: uj.Name type=string kind=string quoted=false*/
 
 	{
 
@@ -1187,7 +1218,9 @@ handle_Name:
 
 		} else {
 
-			uj.Name = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Name = string(string(outBuf))
 
 		}
 	}
@@ -1197,7 +1230,7 @@ handle_Name:
 
 handle_Args:
 
-	/* handler: uj.Args type=string kind=string */
+	/* handler: uj.Args type=string kind=string quoted=false*/
 
 	{
 
@@ -1211,7 +1244,9 @@ handle_Args:
 
 		} else {
 
-			uj.Args = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Args = string(string(outBuf))
 
 		}
 	}
@@ -1221,7 +1256,7 @@ handle_Args:
 
 handle_Kwargs:
 
-	/* handler: uj.Kwargs type=string kind=string */
+	/* handler: uj.Kwargs type=string kind=string quoted=false*/
 
 	{
 
@@ -1235,7 +1270,9 @@ handle_Kwargs:
 
 		} else {
 
-			uj.Kwargs = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Kwargs = string(string(outBuf))
 
 		}
 	}
@@ -1245,7 +1282,7 @@ handle_Kwargs:
 
 handle_Result:
 
-	/* handler: uj.Result type=string kind=string */
+	/* handler: uj.Result type=string kind=string quoted=false*/
 
 	{
 
@@ -1259,7 +1296,9 @@ handle_Result:
 
 		} else {
 
-			uj.Result = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Result = string(string(outBuf))
 
 		}
 	}
@@ -1269,7 +1308,7 @@ handle_Result:
 
 handle_Runtime:
 
-	/* handler: uj.Runtime type=float32 kind=float32 */
+	/* handler: uj.Runtime type=float32 kind=float32 quoted=false*/
 
 	{
 		if tok != fflib.FFTok_double && tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -1299,7 +1338,7 @@ handle_Runtime:
 
 handle_Retries:
 
-	/* handler: uj.Retries type=int kind=int */
+	/* handler: uj.Retries type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -1329,7 +1368,7 @@ handle_Retries:
 
 handle_ETA:
 
-	/* handler: uj.ETA type=int kind=int */
+	/* handler: uj.ETA type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -1359,7 +1398,7 @@ handle_ETA:
 
 handle_Exception:
 
-	/* handler: uj.Exception type=string kind=string */
+	/* handler: uj.Exception type=string kind=string quoted=false*/
 
 	{
 
@@ -1373,7 +1412,9 @@ handle_Exception:
 
 		} else {
 
-			uj.Exception = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Exception = string(string(outBuf))
 
 		}
 	}
@@ -1383,7 +1424,7 @@ handle_Exception:
 
 handle_Traceback:
 
-	/* handler: uj.Traceback type=string kind=string */
+	/* handler: uj.Traceback type=string kind=string quoted=false*/
 
 	{
 
@@ -1397,7 +1438,9 @@ handle_Traceback:
 
 		} else {
 
-			uj.Traceback = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Traceback = string(string(outBuf))
 
 		}
 	}
@@ -1407,16 +1450,15 @@ handle_Traceback:
 
 handle_Terminated:
 
-	/* handler: uj.Terminated type=bool kind=bool */
+	/* handler: uj.Terminated type=bool kind=bool quoted=false*/
 
 	{
-
-		{
-			if tok != fflib.FFTok_bool && tok != fflib.FFTok_null {
-				return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for bool", tok))
-			}
+		if tok != fflib.FFTok_bool && tok != fflib.FFTok_null {
+			return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for bool", tok))
 		}
+	}
 
+	{
 		if tok == fflib.FFTok_null {
 
 		} else {
@@ -1443,28 +1485,18 @@ handle_Terminated:
 
 handle_Signum:
 
-	/* handler: uj.Signum type=int kind=int */
+	/* handler: uj.Signum type=interface {} kind=interface quoted=false*/
 
 	{
-		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
-			return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for int", tok))
+		/* Falling back. type=interface {} kind=interface */
+		tbuf, err := fs.CaptureField(tok)
+		if err != nil {
+			return fs.WrapErr(err)
 		}
-	}
 
-	{
-
-		if tok == fflib.FFTok_null {
-
-		} else {
-
-			tval, err := fflib.ParseInt(fs.Output.Bytes(), 10, 64)
-
-			if err != nil {
-				return fs.WrapErr(err)
-			}
-
-			uj.Signum = int(tval)
-
+		err = json.Unmarshal(tbuf, &uj.Signum)
+		if err != nil {
+			return fs.WrapErr(err)
 		}
 	}
 
@@ -1473,16 +1505,15 @@ handle_Signum:
 
 handle_Expired:
 
-	/* handler: uj.Expired type=bool kind=bool */
+	/* handler: uj.Expired type=bool kind=bool quoted=false*/
 
 	{
-
-		{
-			if tok != fflib.FFTok_bool && tok != fflib.FFTok_null {
-				return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for bool", tok))
-			}
+		if tok != fflib.FFTok_bool && tok != fflib.FFTok_null {
+			return fs.WrapErr(fmt.Errorf("cannot unmarshal %s into Go value for bool", tok))
 		}
+	}
 
+	{
 		if tok == fflib.FFTok_null {
 
 		} else {
@@ -1526,6 +1557,10 @@ done:
 
 func (mj *WorkerEvent) MarshalJSON() ([]byte, error) {
 	var buf fflib.Buffer
+	if mj == nil {
+		buf.WriteString("null")
+		return buf.Bytes(), nil
+	}
 	err := mj.MarshalJSONBuf(&buf)
 	if err != nil {
 		return nil, err
@@ -1533,6 +1568,10 @@ func (mj *WorkerEvent) MarshalJSON() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 func (mj *WorkerEvent) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
+	if mj == nil {
+		buf.WriteString("null")
+		return nil
+	}
 	var err error
 	var obj []byte
 	_ = obj
@@ -1938,7 +1977,7 @@ mainparse:
 
 handle_Type:
 
-	/* handler: uj.Type type=string kind=string */
+	/* handler: uj.Type type=string kind=string quoted=false*/
 
 	{
 
@@ -1952,7 +1991,9 @@ handle_Type:
 
 		} else {
 
-			uj.Type = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Type = string(string(outBuf))
 
 		}
 	}
@@ -1962,7 +2003,7 @@ handle_Type:
 
 handle_Hostname:
 
-	/* handler: uj.Hostname type=string kind=string */
+	/* handler: uj.Hostname type=string kind=string quoted=false*/
 
 	{
 
@@ -1976,7 +2017,9 @@ handle_Hostname:
 
 		} else {
 
-			uj.Hostname = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.Hostname = string(string(outBuf))
 
 		}
 	}
@@ -1986,7 +2029,7 @@ handle_Hostname:
 
 handle_Timestamp:
 
-	/* handler: uj.Timestamp type=float32 kind=float32 */
+	/* handler: uj.Timestamp type=float32 kind=float32 quoted=false*/
 
 	{
 		if tok != fflib.FFTok_double && tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -2016,7 +2059,7 @@ handle_Timestamp:
 
 handle_PID:
 
-	/* handler: uj.PID type=int kind=int */
+	/* handler: uj.PID type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -2046,7 +2089,7 @@ handle_PID:
 
 handle_Clock:
 
-	/* handler: uj.Clock type=int kind=int */
+	/* handler: uj.Clock type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -2076,7 +2119,7 @@ handle_Clock:
 
 handle_UTCOffset:
 
-	/* handler: uj.UTCOffset type=int kind=int */
+	/* handler: uj.UTCOffset type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -2106,7 +2149,7 @@ handle_UTCOffset:
 
 handle_SWSystem:
 
-	/* handler: uj.SWSystem type=string kind=string */
+	/* handler: uj.SWSystem type=string kind=string quoted=false*/
 
 	{
 
@@ -2120,7 +2163,9 @@ handle_SWSystem:
 
 		} else {
 
-			uj.SWSystem = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.SWSystem = string(string(outBuf))
 
 		}
 	}
@@ -2130,7 +2175,7 @@ handle_SWSystem:
 
 handle_SWVersion:
 
-	/* handler: uj.SWVersion type=string kind=string */
+	/* handler: uj.SWVersion type=string kind=string quoted=false*/
 
 	{
 
@@ -2144,7 +2189,9 @@ handle_SWVersion:
 
 		} else {
 
-			uj.SWVersion = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.SWVersion = string(string(outBuf))
 
 		}
 	}
@@ -2154,7 +2201,7 @@ handle_SWVersion:
 
 handle_LoadAverage:
 
-	/* handler: uj.LoadAverage type=[]float32 kind=slice */
+	/* handler: uj.LoadAverage type=[]float32 kind=slice quoted=false*/
 
 	{
 
@@ -2195,7 +2242,7 @@ handle_LoadAverage:
 					wantVal = true
 				}
 
-				/* handler: v type=float32 kind=float32 */
+				/* handler: v type=float32 kind=float32 quoted=false*/
 
 				{
 					if tok != fflib.FFTok_double && tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -2231,7 +2278,7 @@ handle_LoadAverage:
 
 handle_Freq:
 
-	/* handler: uj.Freq type=float32 kind=float32 */
+	/* handler: uj.Freq type=float32 kind=float32 quoted=false*/
 
 	{
 		if tok != fflib.FFTok_double && tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -2261,7 +2308,7 @@ handle_Freq:
 
 handle_SWIdentity:
 
-	/* handler: uj.SWIdentity type=string kind=string */
+	/* handler: uj.SWIdentity type=string kind=string quoted=false*/
 
 	{
 
@@ -2275,7 +2322,9 @@ handle_SWIdentity:
 
 		} else {
 
-			uj.SWIdentity = string(fs.Output.String())
+			outBuf := fs.Output.Bytes()
+
+			uj.SWIdentity = string(string(outBuf))
 
 		}
 	}
@@ -2285,7 +2334,7 @@ handle_SWIdentity:
 
 handle_Processed:
 
-	/* handler: uj.Processed type=int kind=int */
+	/* handler: uj.Processed type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
@@ -2315,7 +2364,7 @@ handle_Processed:
 
 handle_Active:
 
-	/* handler: uj.Active type=int kind=int */
+	/* handler: uj.Active type=int kind=int quoted=false*/
 
 	{
 		if tok != fflib.FFTok_integer && tok != fflib.FFTok_null {
