@@ -149,7 +149,7 @@ Example event json (Task received):
 	"eta": null,
 	"kwargs": "{u'sourceUrl': u'https://www.google.com.au/search?q=nature&espv=2&biw=1216&bih=639&source=lnms&tbm=isch&sa=X&ved=0CAYQ_AUoAWoVChMIn-2Zma23yAIVyLqUCh3CdwBl'}",
 	"type": "task-received",
-	"hostname": "celery@My-Mac.local",
+	"hostname": "celery@worker1.My-Mac.local",
 	"uuid": "8e42b71d-175b-47c1-52e8-0f2e82ddd9ba"
 }
 
@@ -160,7 +160,7 @@ Example event json (Task started):
 	"uuid": "8e42b71d-175b-47c1-52e8-0f2e82ddd9ba",
 	"clock": 60,
 	"timestamp": 1463965647.278163,
-	"hostname": "celery@My-Mac.local",
+	"hostname": "celery@worker1.My-Mac.local",
 	"pid": 10837
 }
 
@@ -169,13 +169,43 @@ Example event json (Task succeeded):
 	"uuid": "8e42b71d-175b-47c1-52e8-0f2e82ddd9ba",
 	"clock": 61,
 	"timestamp": 1463965647.282055,
-	"hostname": "celery@My-Mac.local",
+	"hostname": "celery@worker1.My-Mac.local",
 	"pid": 10837,
 	"utcoffset": -11,
 	"result": "\\"{'sourceUrl': u'https://www.google.com.au/search?q=nature&espv=2&biw=1216&bih=639&source=lnms&tbm=isch&sa=X&ved=0CAYQ_AUoAWoVChMIn-2Zma23yAIVyLqUCh3CdwBl', 'ingestCount': 23}\\"",
 	"runtime": 0.004214855001919204,
 	"type": "task-succeeded"
 }
+
+Example event json (Task revoked):
+NOTE: It appears that "signum" is sometimes returned as a string and sometimes as an integer!!
+{
+	"type": "task-revoked",
+	"uuid": "9e4c1cf3-6b66-482e-5145-0eb4d12f91ab",
+	"clock": 1549,
+	"timestamp": 1444938011.962136,
+	"hostname": "celery@worker1.My-Mac.local",
+	"pid": 46221,
+	"utcoffset": -11,
+
+	"terminated": true,
+	"signum": "15",
+	"expired": false
+}
+
+{
+	"terminated": true,
+	"type": "task-revoked",
+	"uuid": "9e4c1cf3-6b66-482e-5145-0eb4d12f91ab",
+	"clock": 1550,
+	"timestamp": 1444938011.978788,
+	"hostname": "celery@worker1.My-Mac.local",
+	"pid": 46221,
+	"utcoffset": -11,
+	"signum": 15,
+	"expired": false
+}
+
 */
 
 /*
@@ -222,8 +252,8 @@ type TaskEvent struct {
 	// Terminated is a flag indicating whether the task has been terminated
 	Terminated bool `json:"terminated, omitempty"`
 
-	// Signum is the sigal number
-	Signum int `json:"signum, omitempty"`
+	// Signum is the signal number
+	Signum interface{} `json:"signum, omitempty"`
 
 	// Expired is a flag indicating whether the task has expired due to factors
 	Expired bool `json:"expired, omitempty"`
@@ -251,7 +281,7 @@ func NewTaskEvent() *TaskEvent {
 		Exception:  "",
 		Traceback:  "",
 		Terminated: false,
-		Signum:     0,
+		Signum:     "",
 		Expired:    false,
 	}
 }
