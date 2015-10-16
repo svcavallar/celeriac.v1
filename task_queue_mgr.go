@@ -86,6 +86,26 @@ func (taskQueueMgr *TaskQueueMgr) Close() {
 }
 
 /*
+publish publishes data onto an AMQP channel via the specified exchange name and routing key
+*/
+func (taskQueueMgr *TaskQueueMgr) publish(data interface{}, exchangeName string, routingKey string) error {
+	bodyData, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+
+	msg := amqp.Publishing{
+		DeliveryMode:    amqp.Persistent,
+		Timestamp:       time.Now(),
+		ContentType:     ConstPublishTaskContentType,
+		ContentEncoding: ConstPublishTaskContentEncoding,
+		Body:            bodyData,
+	}
+
+	return taskQueueMgr.channel.Publish(exchangeName, routingKey, false, false, msg)
+}
+
+/*
 DispatchTask places a new task on the Celery task queue
 Creates a new Task based on the supplied task name and data
 */
@@ -102,28 +122,56 @@ func (taskQueueMgr *TaskQueueMgr) DispatchTask(taskName string, taskData map[str
 		routingKey = ConstTaskDefaultRoutingKey
 	}
 
-	err = taskQueueMgr.publishTask(task, ConstTaskDefaultExchangeName, routingKey)
+	err = taskQueueMgr.publish(task, ConstTaskDefaultExchangeName, routingKey)
 	log.Infof("Dispatched task [NAME]: %s, [ID]:%s to task queue with [ROUTING KEY]:%s", taskName, task.ID, routingKey)
 
 	return task, err
 }
 
 /*
-publishTask publishes a task object onto an AMQP channel via the specified exchange name and routing key
+RevokeTask attempts to notify Celery workers that the specified task needs revoking
 */
-func (taskQueueMgr *TaskQueueMgr) publishTask(task *Task, exchangeName string, routingKey string) error {
-	bodyData, err := json.Marshal(task)
-	if err != nil {
-		return err
+func (taskQueueMgr *TaskQueueMgr) RevokeTask(taskID string) error {
+	if taskID == "" || len(taskID) == 0 {
+		return ErrInvalidTaskID
 	}
 
-	msg := amqp.Publishing{
-		DeliveryMode:    amqp.Persistent,
-		Timestamp:       time.Now(),
-		ContentType:     ConstPublishTaskContentType,
-		ContentEncoding: ConstPublishTaskContentEncoding,
-		Body:            bodyData,
+	log.Infof("Revoking task [ID]:%s", taskID)
+
+	rt := NewRevokeTaskCmd(taskID, true)
+	return taskQueueMgr.publish(rt, ConstTaskControlExchangeName, ConstTaskDefaultRoutingKey)
+}
+
+/*
+Ping attempts to ping Celery workers
+*/
+func (taskQueueMgr *TaskQueueMgr) Ping() error {
+	log.Infof("Sending ping to workers")
+
+	rt := NewPingCmd()
+	return taskQueueMgr.publish(rt, ConstTaskControlExchangeName, ConstTaskDefaultRoutingKey)
+}
+
+/*
+RateLimitTask attempts to set rate limit tasks by type
+*/
+func (taskQueueMgr *TaskQueueMgr) RateLimitTask(taskName string, rateLimit string) error {
+	if taskName == "" || len(taskName) == 0 {
+		return ErrInvalidTaskName
 	}
 
-	return taskQueueMgr.channel.Publish(exchangeName, routingKey, false, false, msg)
+	rt := NewRateLimitTaskCmd(taskName, rateLimit)
+	return taskQueueMgr.publish(rt, ConstTaskControlExchangeName, ConstTaskDefaultRoutingKey)
+}
+
+/*
+TimeLimitTask attempts to set time limits for task by type
+*/
+func (taskQueueMgr *TaskQueueMgr) TimeLimitTask(taskName string, hardLimit string, softLimit string) error {
+	if taskName == "" || len(taskName) == 0 {
+		return ErrInvalidTaskName
+	}
+
+	rt := NewTimeLimitTaskCmd(taskName, hardLimit, softLimit)
+	return taskQueueMgr.publish(rt, ConstTaskControlExchangeName, ConstTaskDefaultRoutingKey)
 }
