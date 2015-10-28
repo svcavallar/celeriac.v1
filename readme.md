@@ -21,39 +21,43 @@ Installation: `go get github.com/svcavallar/celeriac.v1`
 This imports a new namespace called `celeriac`
 
 ```go
+package main
+
 import (
+	"log"
+	"os"
+
 	"github.com/svcavallar/celeriac.v1"
+)
 
 func main() {
-	taskBrokerURI := "amqp://svcworker:svcworker@127.0.0.1:5672"
+	taskBrokerURI := "amqp://user:pass@localhost:5672/vhost"
 
 	// Connect to RabbitMQ task queue
-	service.TaskQueueMgr, err = celeriac.NewTaskQueueMgr(taskBrokerURI)
+	TaskQueueMgr, err := celeriac.NewTaskQueueMgr(taskBrokerURI)
 	if err != nil {
-		log.Infof("Failed to connect to task queue: %v", err)
-		return err
+		log.Printf("Failed to connect to task queue: %v", err)
+		os.Exit(-1)
 	}
 
-	log.Infof("Service connected to task queue - (URL: %s)", taskBrokerURI)
+	log.Printf("Service connected to task queue - (URL: %s)", taskBrokerURI)
 
 	// Get the task events from the task events channel
-	go func() {
-		for {
-			select {
-			default:
-				ev := <-service.TaskQueueMgr.Monitor.EventsChannel
+	for {
+		select {
+		default:
+			ev := <-TaskQueueMgr.Monitor.EventsChannel
 
-				if ev != nil {
+			if ev != nil {
 
-					if x, ok := ev.(*celeriac.WorkerEvent); ok {
-						log.Printf("Task monitor: Worker event - %s", x.Type)
-					} else if x, ok := ev.(*celeriac.TaskEvent); ok {
-						log.Printf("Task monitor: Task event - %s [ID]: %s", x.Type, x.UUID)
-					}
-
+				if x, ok := ev.(*celeriac.WorkerEvent); ok {
+					log.Printf("Task monitor: Worker event - %s", x.Type)
+				} else if x, ok := ev.(*celeriac.TaskEvent); ok {
+					log.Printf("Task monitor: Task event - %s [ID]: %s", x.Type, x.UUID)
 				}
+
 			}
 		}
-	}()
+	}
 }
 ```
