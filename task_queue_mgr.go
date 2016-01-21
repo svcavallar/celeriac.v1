@@ -112,7 +112,18 @@ Creates a new Task based on the supplied task name and data
 func (taskQueueMgr *TaskQueueMgr) DispatchTask(taskName string, taskData map[string]interface{}, routingKey string) (*Task, error) {
 	var err error
 
-	task, err := NewTask(taskName, nil, taskData)
+	task, err := taskQueueMgr.DispatchTaskWithID("", taskName, taskData, routingKey)
+	return task, err
+}
+
+/*
+DispatchTaskWithID places a new task with the specified ID on the Celery task queue
+Creates a new Task based on the supplied task name and data
+*/
+func (taskQueueMgr *TaskQueueMgr) DispatchTaskWithID(taskID string, taskName string, taskData map[string]interface{}, routingKey string) (*Task, error) {
+	var err error
+
+	task, err := NewTaskWithID(taskID, taskName, nil, taskData)
 	if err != nil {
 		log.Fatalf("Failed to create task: %v", err)
 		panic(err)
