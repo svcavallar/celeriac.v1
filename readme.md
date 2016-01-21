@@ -61,3 +61,39 @@ func main() {
 	}
 }
 ```
+
+Dispatching Tasks
+-----------------
+
+### By Name
+This will create and dispatch a task incorporating the supplied data. The task will automatically be allocated and identified by a UUID returned in the task object. The UUID is represented in the form of "6ba7b810-9dad-11d1-80b4-00c04fd430c8".
+
+	// Dispatch a new task
+	taskName := "root.test.task"
+	taskData := map[string]interface{}{
+		"foo": "bar"
+	}
+	routingKey := "root.test"
+	
+	task, err := TaskQueueMgr.DispatchTask(taskName, taskData, routingKey)
+	if err != nil {
+		log.Errorf("Failed to dispatch task to queue: %v", err)
+	}
+
+
+### By ID & Name
+This will create and dispatch a task incorporating the supplied data, and identified by the user-supplied task identifier. 
+
+	// Dispatch a new task
+	taskID := "my_task_id_123456789"
+	taskName := "root.test.task"
+	taskData := map[string]interface{}{
+		"foo": "bar"
+	}
+	routingKey := "root.test"
+	
+	task, err := TaskQueueMgr.DispatchTaskWithID(taskID, taskName, taskData, routingKey)
+	if err != nil {
+		log.Errorf("Failed to dispatch task to queue: %v", err)
+	}
+
