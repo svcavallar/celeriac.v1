@@ -38,9 +38,35 @@ type Task struct {
 NewTask is a factory function that creates and returns a pointer to a new task object
 */
 func NewTask(taskName string, args []string, kwargs map[string]interface{}) (*Task, error) {
-	newTaskID, err := uuid.NewV4()
+
+	taskUUID, err := uuid.NewV4()
 	if err != nil {
 		return nil, err
+	}
+
+	newTask, err := NewTaskWithID(taskUUID.String(), taskName, args, kwargs)
+	if err != nil {
+		return nil, err
+	}
+
+	return newTask, nil
+}
+
+/*
+NewTaskWithID is a factory function that creates and returns a pointer to a new task object, allowing caller to
+specify the task ID.
+*/
+func NewTaskWithID(taskID string, taskName string, args []string, kwargs map[string]interface{}) (*Task, error) {
+
+	newTaskID := taskID
+
+	if newTaskID == "" {
+		taskUUID, err := uuid.NewV4()
+		if err != nil {
+			return nil, err
+		}
+
+		newTaskID = taskUUID.String()
 	}
 
 	if args == nil {
@@ -49,7 +75,7 @@ func NewTask(taskName string, args []string, kwargs map[string]interface{}) (*Ta
 
 	newTask := Task{
 		TaskName: taskName,
-		ID:       newTaskID.String(),
+		ID:       newTaskID,
 		Args:     args,
 		KWArgs:   kwargs,
 		Retries:  0,
