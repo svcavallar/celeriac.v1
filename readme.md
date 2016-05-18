@@ -54,8 +54,9 @@ func main() {
 					log.Printf("Task monitor: Worker event - %s", x.Type)
 				} else if x, ok := ev.(*celeriac.TaskEvent); ok {
 					log.Printf("Task monitor: Task event - %s [ID]: %s", x.Type, x.UUID)
+				} else if x, ok := ev.(*celeriac.Event); ok {
+					log.Printf("Task monitor: General event - %s [Hostname]: %s - [Data]: %v", x.Type, x.Hostname, x.Data)
 				}
-
 			}
 		}
 	}
@@ -74,7 +75,7 @@ This will create and dispatch a task incorporating the supplied data. The task w
 		"foo": "bar"
 	}
 	routingKey := "root.test"
-	
+
 	task, err := TaskQueueMgr.DispatchTask(taskName, taskData, routingKey)
 	if err != nil {
 		log.Errorf("Failed to dispatch task to queue: %v", err)
@@ -82,7 +83,7 @@ This will create and dispatch a task incorporating the supplied data. The task w
 
 
 ### By ID & Name
-This will create and dispatch a task incorporating the supplied data, and identified by the user-supplied task identifier. 
+This will create and dispatch a task incorporating the supplied data, and identified by the user-supplied task identifier.
 
 	// Dispatch a new task
 	taskID := "my_task_id_123456789"
@@ -91,9 +92,8 @@ This will create and dispatch a task incorporating the supplied data, and identi
 		"foo": "bar"
 	}
 	routingKey := "root.test"
-	
+
 	task, err := TaskQueueMgr.DispatchTaskWithID(taskID, taskName, taskData, routingKey)
 	if err != nil {
 		log.Errorf("Failed to dispatch task to queue: %v", err)
 	}
-
