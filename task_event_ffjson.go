@@ -46,6 +46,12 @@ func (mj *Event) MarshalJSONBuf(buf fflib.EncodingBuffer) error {
 	fflib.FormatBits2(buf, uint64(mj.Clock), 10, mj.Clock < 0)
 	buf.WriteString(`,"utcoffset":`)
 	fflib.FormatBits2(buf, uint64(mj.UTCOffset), 10, mj.UTCOffset < 0)
+	buf.WriteString(`,"data":`)
+	/* Interface types must use runtime reflection. type=interface {} kind=interface */
+	err = buf.Encode(mj.Data)
+	if err != nil {
+		return err
+	}
 	buf.WriteByte('}')
 	return nil
 }
@@ -65,6 +71,8 @@ const (
 	ffj_t_Event_Clock
 
 	ffj_t_Event_UTCOffset
+
+	ffj_t_Event_Data
 )
 
 var ffj_key_Event_Type = []byte("type")
@@ -78,6 +86,8 @@ var ffj_key_Event_PID = []byte("pid")
 var ffj_key_Event_Clock = []byte("clock")
 
 var ffj_key_Event_UTCOffset = []byte("utcoffset")
+
+var ffj_key_Event_Data = []byte("data")
 
 func (uj *Event) UnmarshalJSON(input []byte) error {
 	fs := fflib.NewFFLexer(input)
@@ -146,6 +156,14 @@ mainparse:
 						goto mainparse
 					}
 
+				case 'd':
+
+					if bytes.Equal(ffj_key_Event_Data, kn) {
+						currentKey = ffj_t_Event_Data
+						state = fflib.FFParse_want_colon
+						goto mainparse
+					}
+
 				case 'h':
 
 					if bytes.Equal(ffj_key_Event_Hostname, kn) {
@@ -183,6 +201,12 @@ mainparse:
 						goto mainparse
 					}
 
+				}
+
+				if fflib.SimpleLetterEqualFold(ffj_key_Event_Data, kn) {
+					currentKey = ffj_t_Event_Data
+					state = fflib.FFParse_want_colon
+					goto mainparse
 				}
 
 				if fflib.EqualFoldRight(ffj_key_Event_UTCOffset, kn) {
@@ -255,6 +279,9 @@ mainparse:
 
 				case ffj_t_Event_UTCOffset:
 					goto handle_UTCOffset
+
+				case ffj_t_Event_Data:
+					goto handle_Data
 
 				case ffj_t_Eventno_such_key:
 					err = fs.SkipField(tok)
@@ -436,6 +463,26 @@ handle_UTCOffset:
 
 			uj.UTCOffset = int(tval)
 
+		}
+	}
+
+	state = fflib.FFParse_after_value
+	goto mainparse
+
+handle_Data:
+
+	/* handler: uj.Data type=interface {} kind=interface quoted=false*/
+
+	{
+		/* Falling back. type=interface {} kind=interface */
+		tbuf, err := fs.CaptureField(tok)
+		if err != nil {
+			return fs.WrapErr(err)
+		}
+
+		err = json.Unmarshal(tbuf, &uj.Data)
+		if err != nil {
+			return fs.WrapErr(err)
 		}
 	}
 

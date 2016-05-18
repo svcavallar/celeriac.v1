@@ -25,6 +25,9 @@ type Event struct {
 
 	// UTCOffset is the offset from UTC for the time when this event is valid
 	UTCOffset int `json:"utcoffset"`
+
+	// Data is a property allowing extra data to be sent through for custom events from a Celery worker
+	Data interface{} `json:"data, omitempty"`
 }
 
 /*
