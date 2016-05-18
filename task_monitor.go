@@ -136,22 +136,21 @@ func (monitor *TaskMonitor) SetMonitorWorkerHeartbeatEvents(processHeartbeatEven
 Handles Celery event messages on the task queue
 */
 func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan error, out chan interface{}) {
+
 	rawEvent := NewEvent()
 	for d := range deliveries {
 
-		/*
-			// This code is here purely for debugging ALL messages, and for extracting ones we are unsure of the json format!
-			log.Printf("Received %d bytes: [%v] %q",
-				len(d.Body),
-				d.DeliveryTag,
-				d.Body,
-			)
-		*/
+		// This code is here purely for debugging ALL messages, and for extracting ones we are unsure of the json format!
+		//log.Printf("Received %d bytes: [%v] %q",
+		//	len(d.Body),
+		//	d.DeliveryTag,
+		//	d.Body,
+		//)
 
 		// NOTE: We use "ffjson" for performance over the standard Golang json decoding package
 		err := rawEvent.UnmarshalJSON(d.Body)
 		if err != nil {
-			fmt.Print("Error:", err)
+			fmt.Printf("Error: %v", err)
 		}
 
 		var celeryEvent interface{}
@@ -164,7 +163,7 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 			var t = NewWorkerEvent()
 			err := t.UnmarshalJSON(d.Body)
 			if err != nil {
-				fmt.Print("Error:", err)
+				fmt.Printf("Error: %v", err)
 			}
 			celeryEvent = t
 			break
@@ -174,7 +173,7 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 				var t = NewWorkerEvent()
 				err := t.UnmarshalJSON(d.Body)
 				if err != nil {
-					fmt.Print("Error:", err)
+					fmt.Printf("Error: %v", err)
 				}
 				celeryEvent = t
 			}
@@ -191,12 +190,13 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 			var t = NewTaskEvent()
 			err := t.UnmarshalJSON(d.Body)
 			if err != nil {
-				fmt.Print("Error:", err)
+				fmt.Printf("Error: %v", err)
 			}
 			celeryEvent = t
 			break
 
 		default:
+			celeryEvent = rawEvent
 			break
 		}
 
@@ -208,4 +208,5 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 
 	log.Printf("handle: deliveries channel closed")
 	done <- nil
+
 }
