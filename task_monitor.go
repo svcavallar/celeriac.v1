@@ -84,7 +84,7 @@ func NewTaskMonitor(connection *amqp.Connection, channel *amqp.Channel,
 	monitor.deliveryChannel, err = monitor.channel.Consume(
 		queue.Name,          // name
 		monitor.consumerTag, // consumerTag,
-		false,               // noAck
+		false,               // auto-ack
 		false,               // exclusive
 		false,               // noLocal
 		false,               // noWait
@@ -140,6 +140,8 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 	rawEvent := NewEvent()
 	for d := range deliveries {
 
+		d.Ack(false)
+
 		// This code is here purely for debugging ALL messages, and for extracting ones we are unsure of the json format!
 		//log.Printf("Received %d bytes: [%v] %q",
 		//	len(d.Body),
@@ -153,8 +155,6 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 			fmt.Printf("Error: %v", err)
 		}
 
-		var celeryEvent interface{}
-
 		switch rawEvent.Type {
 
 		case ConstEventTypeWorkerOnline,
@@ -165,7 +165,7 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 			if err != nil {
 				fmt.Printf("Error: %v", err)
 			}
-			celeryEvent = t
+			out <- t
 			break
 
 		case ConstEventTypeWorkerHeartbeat:
@@ -175,7 +175,7 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 				if err != nil {
 					fmt.Printf("Error: %v", err)
 				}
-				celeryEvent = t
+				out <- t
 			}
 			break
 
@@ -192,18 +192,13 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 			if err != nil {
 				fmt.Printf("Error: %v", err)
 			}
-			celeryEvent = t
+			out <- t
 			break
 
 		default:
-			celeryEvent = rawEvent
+			out <- rawEvent
 			break
 		}
-
-		// Publish the task event through our channel
-		out <- celeryEvent
-
-		d.Ack(true)
 	}
 
 	log.Printf("handle: deliveries channel closed")
