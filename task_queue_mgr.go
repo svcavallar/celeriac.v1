@@ -8,6 +8,8 @@ import (
 	// Package dependencies
 	log "github.com/Sirupsen/logrus"
 	"github.com/streadway/amqp"
+    "strings"
+    "crypto/tls"
 )
 
 /*
@@ -37,7 +39,16 @@ func (taskQueueMgr *TaskQueueMgr) init(brokerURI string) error {
 	var err error
 
 	// Connect to the task queue
-	taskQueueMgr.connection, err = amqp.Dial(brokerURI)
+    if strings.HasPrefix(brokerURI, "amqps") {
+        tlsConfig := &tls.Config{}
+        //tlsConfig := &tls.Config{MinVersion: tls.VersionTLS12}
+        tlsConfig.InsecureSkipVerify = true
+
+        taskQueueMgr.connection, err = amqp.DialTLS(brokerURI, tlsConfig)
+    } else {
+        taskQueueMgr.connection, err = amqp.Dial(brokerURI)
+    }
+
 	if err != nil {
 		log.Errorf("Failed to connect to AMQP queue: %v", err)
 		return err
