@@ -13,25 +13,25 @@ Task is a representation of a Celery task
 */
 type Task struct {
 	// TaskName is the name of the task
-	TaskName string
+	TaskName string `json:"task"`
 
 	// ID is the task UUID
-	ID string
+	ID string `json:"id"`
 
 	// Args are task arguments (optional)
-	Args []string
+	Args []string `json:"args, omitempty"`
 
 	// KWArgs are keyword arguments (optional)
-	KWArgs map[string]interface{}
+	KWArgs map[string]interface{} `json:"kwargs, omitempty"`
 
 	// Retries is a number of retries to perform if an error occurs (optional)
-	Retries int
+	Retries int `json:"retries, omitempty"`
 
 	// ETA is the estimated completion time (optional)
-	ETA time.Time
+	ETA *time.Time `json:"eta, omitempty"`
 
 	// Expires is the time when this task will expire (optional)
-	Expires time.Time
+	Expires *time.Time `json:"expires, omitempty"`
 }
 
 /*
@@ -73,7 +73,7 @@ func NewTaskWithID(taskID string, taskName string, args []string, kwargs map[str
 		args = []string{}
 	}
 
-	newTask := Task{
+	newTask := Task {
 		TaskName: taskName,
 		ID:       newTaskID,
 		Args:     args,
@@ -90,17 +90,7 @@ MarshalJSON marshals a Task object into a json bytes array
 Time properties are converted to UTC and formatted in ISO8601
 */
 func (task *Task) MarshalJSON() ([]byte, error) {
-	type _jsonTask struct {
-		TaskName string                 `json:"task"`
-		ID       string                 `json:"id"`
-		Args     []string               `json:"args, omitempty"`
-		KWArgs   map[string]interface{} `json:"kwargs, omitempty"`
-		Retries  int                    `json:"retries, omitempty"`
-		ETA      string                 `json:"eta, omitempty"`
-		Expires  string                 `json:"expires, omitempty"`
-	}
-
-	out := _jsonTask{
+	out := Task {
 		TaskName: task.TaskName,
 		ID:       task.ID,
 		Args:     task.Args,
@@ -109,12 +99,12 @@ func (task *Task) MarshalJSON() ([]byte, error) {
 	}
 
 	// Convert time properties to UTC, and format as ISO8601
-	if !task.ETA.IsZero() {
-		out.ETA = task.ETA.UTC().Format(ConstTimeFormat)
+	if task.ETA != nil && !task.ETA.IsZero() {
+		*out.ETA = task.ETA.UTC()
 	}
 
-	if !task.Expires.IsZero() {
-		out.Expires = task.Expires.UTC().Format(ConstTimeFormat)
+	if task.Expires != nil && !task.Expires.IsZero() {
+		*out.Expires = task.Expires.UTC()
 	}
 
 	return json.Marshal(out)

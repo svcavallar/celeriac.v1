@@ -11,10 +11,10 @@ import (
 // Global Errors
 var (
 	// ErrInvalidTaskID is raised when an invalid task ID has been detected
-	ErrInvalidTaskID = errors.New("Invalid task ID specified")
+	ErrInvalidTaskID = errors.New("invalid task ID specified")
 
 	// ErrInvalidTaskName is raised when an invalid task name has been detected
-	ErrInvalidTaskName = errors.New("Invalid task name specified")
+	ErrInvalidTaskName = errors.New("invalid task name specified")
 )
 
 // Fail logs the error and exits the program

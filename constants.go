@@ -37,32 +37,32 @@ const (
 	// Event type names (as strings)
 
 	// ConstEventTypeWorkerOnline is the event type when a Celery worker comes online
-	ConstEventTypeWorkerOnline string = "worker-online"
+	ConstEventTypeWorkerOnline = "worker-online"
 
 	// ConstEventTypeWorkerOffline is the event type when a Celery worker goes offline
-	ConstEventTypeWorkerOffline string = "worker-offline"
+	ConstEventTypeWorkerOffline = "worker-offline"
 
 	// ConstEventTypeWorkerHeartbeat is the event type when a Celery worker is online and "alive"
-	ConstEventTypeWorkerHeartbeat string = "worker-heartbeat"
+	ConstEventTypeWorkerHeartbeat = "worker-heartbeat"
 
 	// ConstEventTypeTaskSent is the event type when a Celery task is sent
-	ConstEventTypeTaskSent string = "task-sent"
+	ConstEventTypeTaskSent = "task-sent"
 
 	// ConstEventTypeTaskReceived is the event type when a Celery worker receives a task
-	ConstEventTypeTaskReceived string = "task-received"
+	ConstEventTypeTaskReceived = "task-received"
 
 	// ConstEventTypeTaskStarted is the event type when a Celery worker starts a task
-	ConstEventTypeTaskStarted string = "task-started"
+	ConstEventTypeTaskStarted = "task-started"
 
 	// ConstEventTypeTaskSucceeded is the event type when a Celery worker completes a task
-	ConstEventTypeTaskSucceeded string = "task-succeeded"
+	ConstEventTypeTaskSucceeded = "task-succeeded"
 
 	// ConstEventTypeTaskFailed is the event type when a Celery worker fails to complete a task
-	ConstEventTypeTaskFailed string = "task-failed"
+	ConstEventTypeTaskFailed = "task-failed"
 
 	// ConstEventTypeTaskRevoked is the event type when a Celery worker has its task revoked
-	ConstEventTypeTaskRevoked string = "task-revoked"
+	ConstEventTypeTaskRevoked = "task-revoked"
 
 	// ConstEventTypeTaskRetried is the event type when a Celery worker retries a task
-	ConstEventTypeTaskRetried string = "task-retried"
+	ConstEventTypeTaskRetried = "task-retried"
 )

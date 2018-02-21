@@ -1,6 +1,7 @@
 package celeriac
 
 import (
+	"encoding/json"
 	"fmt"
 
 	// Package dependencies
@@ -51,7 +52,7 @@ func NewTaskMonitor(connection *amqp.Connection, channel *amqp.Channel,
 		false,        // noWait
 		nil,          // arguments
 	); err != nil {
-		return nil, fmt.Errorf("Exchange Declare: %s", err)
+		return nil, fmt.Errorf("error declaring exchange: %s", err)
 	}
 
 	log.Printf("Declared exchange, declaring queue %q", queueName)
@@ -64,7 +65,7 @@ func NewTaskMonitor(connection *amqp.Connection, channel *amqp.Channel,
 		nil,       // arguments
 	)
 	if err != nil {
-		return nil, fmt.Errorf("Queue declare: %s", err)
+		return nil, fmt.Errorf("error declaring queue: %s", err)
 	}
 
 	log.Printf("Declared queue (%q %d messages, %d consumers), binding to Exchange (binding key %q)",
@@ -77,7 +78,7 @@ func NewTaskMonitor(connection *amqp.Connection, channel *amqp.Channel,
 		false,        // noWait
 		nil,          // arguments
 	); err != nil {
-		return nil, fmt.Errorf("Queue Bind: %s", err)
+		return nil, fmt.Errorf("error binding to queue: %s", err)
 	}
 
 	log.Printf("Queue bound to exchange, starting monitoring (consumer tag %q)", monitor.consumerTag)
@@ -91,7 +92,7 @@ func NewTaskMonitor(connection *amqp.Connection, channel *amqp.Channel,
 		nil,                 // arguments
 	)
 	if err != nil {
-		return nil, fmt.Errorf("Queue Consume: %s", err)
+		return nil, fmt.Errorf("error consuming queue: %s", err)
 	}
 
 	// Spawn a Go routine to handle event monitoring
@@ -109,14 +110,14 @@ func (monitor *TaskMonitor) Shutdown() error {
 
 	// Will close() the deliveries channel
 	if err := monitor.channel.Cancel(monitor.consumerTag, true); err != nil {
-		return fmt.Errorf("Monitor cancel failed: %s", err)
+		return fmt.Errorf("failed to cancel monitor: %s", err)
 	}
 
 	if err := monitor.connection.Close(); err != nil {
-		return fmt.Errorf("AMQP connection close error: %s", err)
+		return fmt.Errorf("error closing AMQP connection: %s", err)
 	}
 
-	defer log.Printf("AMQP shutdown OK")
+	defer log.Printf("shutdown AMQP OK")
 
 	// Wait for handle() to exit
 	return <-monitor.done
@@ -143,65 +144,101 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 		d.Ack(false)
 
 		// This code is here purely for debugging ALL messages, and for extracting ones we are unsure of the json format!
-		//log.Printf("Received %d bytes: [%v] %q",
-		//	len(d.Body),
-		//	d.DeliveryTag,
-		//	d.Body,
-		//)
+		/*
+			log.Printf("Received %d bytes: [%v] %q",
+				len(d.Body),
+				d.DeliveryTag,
+				d.Body,
+			)
+		*/
 
-		// NOTE: We use "ffjson" for performance over the standard Golang json decoding package
 		err := rawEvent.UnmarshalJSON(d.Body)
 		if err != nil {
-			fmt.Printf("Error: %v", err)
-		}
+			log.Warnf("%v, checking if TaskEvent array...", err)
 
-		switch rawEvent.Type {
-
-		case ConstEventTypeWorkerOnline,
-			ConstEventTypeWorkerOffline:
-
-			var t = NewWorkerEvent()
-			err := t.UnmarshalJSON(d.Body)
+			var taskEvents TaskEventsList
+			err = json.Unmarshal(d.Body, &taskEvents)
 			if err != nil {
-				fmt.Printf("Error: %v", err)
+				log.Errorf("Error: %v, Data was %d bytes: [%v] %q",
+					err,
+					len(d.Body),
+					d.DeliveryTag,
+					d.Body,
+				)
+				continue
 			}
-			out <- t
-			break
 
-		case ConstEventTypeWorkerHeartbeat:
-			if monitor.monitorWorkerHeartbeatEvents {
+			for _, taskEvent := range taskEvents {
+				out <- &taskEvent
+			}
+
+		} else {
+			switch rawEvent.Type {
+
+			case ConstEventTypeWorkerOnline,
+				ConstEventTypeWorkerOffline:
+
 				var t = NewWorkerEvent()
 				err := t.UnmarshalJSON(d.Body)
 				if err != nil {
-					fmt.Printf("Error: %v", err)
+					log.Errorf("Error: %v, Data was %d bytes: [%v] %q",
+						err,
+						len(d.Body),
+						d.DeliveryTag,
+						d.Body,
+					)
+					continue
 				}
 				out <- t
+				break
+
+			case ConstEventTypeWorkerHeartbeat:
+				if monitor.monitorWorkerHeartbeatEvents {
+					var t = NewWorkerEvent()
+					err := t.UnmarshalJSON(d.Body)
+					if err != nil {
+						log.Errorf("Error: %v, Data was %d bytes: [%v] %q",
+							err,
+							len(d.Body),
+							d.DeliveryTag,
+							d.Body,
+						)
+						continue
+					}
+					out <- t
+				}
+				break
+
+			case ConstEventTypeTaskSent,
+				ConstEventTypeTaskReceived,
+				ConstEventTypeTaskStarted,
+				ConstEventTypeTaskSucceeded,
+				ConstEventTypeTaskFailed,
+				ConstEventTypeTaskRevoked,
+				ConstEventTypeTaskRetried:
+
+				var t = NewTaskEvent()
+				err := t.UnmarshalJSON(d.Body)
+				if err != nil {
+					log.Errorf("Error: %v, Data was %d bytes: [%v] %q",
+						err,
+						len(d.Body),
+						d.DeliveryTag,
+						d.Body,
+					)
+					continue
+				}
+				out <- t
+				break
+
+			default:
+				out <- rawEvent
+				break
 			}
-			break
-
-		case ConstEventTypeTaskSent,
-			ConstEventTypeTaskReceived,
-			ConstEventTypeTaskStarted,
-			ConstEventTypeTaskSucceeded,
-			ConstEventTypeTaskFailed,
-			ConstEventTypeTaskRevoked,
-			ConstEventTypeTaskRetried:
-
-			var t = NewTaskEvent()
-			err := t.UnmarshalJSON(d.Body)
-			if err != nil {
-				fmt.Printf("Error: %v", err)
-			}
-			out <- t
-			break
-
-		default:
-			out <- rawEvent
-			break
 		}
 	}
 
-	log.Printf("handle: deliveries channel closed")
+	log.Printf("deliveries channel closed")
 	done <- nil
 
 }

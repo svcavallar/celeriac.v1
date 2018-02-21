@@ -13,7 +13,7 @@ import (
 )
 
 /*
-TaskQueueMgr defines a manager for interoperating with a Celery task queue
+TaskQueueMgr defines a manager for interacting with a Celery task queue
 */
 type TaskQueueMgr struct {
 	connection *amqp.Connection
@@ -145,7 +145,7 @@ func (taskQueueMgr *TaskQueueMgr) DispatchTaskWithID(taskID string, taskName str
 	}
 
 	err = taskQueueMgr.publish(task, ConstTaskDefaultExchangeName, routingKey)
-	log.Infof("Dispatched task [NAME]: %s, [ID]:%s to task queue with [ROUTING KEY]:%s", taskName, task.ID, routingKey)
+	log.Infof("Dispatched task [NAME]: %s, [ID]: %s to task queue with [ROUTING KEY]: %s", taskName, task.ID, routingKey)
 
 	return task, err
 }
@@ -158,7 +158,7 @@ func (taskQueueMgr *TaskQueueMgr) RevokeTask(taskID string) error {
 		return ErrInvalidTaskID
 	}
 
-	log.Infof("Revoking task [ID]:%s", taskID)
+	log.Infof("Revoking task [ID]: %s", taskID)
 
 	rt := NewRevokeTaskCmd(taskID, true)
 	return taskQueueMgr.publish(rt, ConstTaskControlExchangeName, ConstTaskDefaultRoutingKey)

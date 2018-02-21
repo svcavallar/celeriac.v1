@@ -55,6 +55,8 @@ func (event *Event) TimestampFormatted() string {
 	return dt.UTC().Format(ConstTimeFormat)
 }
 
+//------------------------------------------------------------------------------
+
 /*
 WorkerEvent defines an event emitted by workers, specific to its operation. Event "types" emitted are:
 	- "worker-online"
@@ -66,7 +68,7 @@ Example worker event json:
 	"sw_sys": "Darwin",
 	"clock": 74,
 	"timestamp": 1843965659.580637,
-	"hostname": "celery@Stefans-Mac.local",
+	"hostname": "celery@worker1.My-Mac.local",
 	"pid": 10837,
 	"sw_ver": "3.1.18",
 	"utcoffset": -11,
@@ -130,6 +132,8 @@ func NewWorkerEvent() *WorkerEvent {
 	}
 }
 
+//------------------------------------------------------------------------------
+
 /*
 TaskEvent defines an event emitted by workers reponding to tasks. Event "types" emitted are:
 	- "task-received"
@@ -146,15 +150,18 @@ Example event json (Task received):
 	"name": "workers.ingester.ingest",
 	"clock": 59,
 	"timestamp": 1463965647.276326,
-	"expires": null,
 	"pid": 10837,
 	"utcoffset": -11,
-	"eta": null,
-	"kwargs": "{u'sourceUrl': u'https://www.google.com.au/search?q=nature&espv=2&biw=1216&bih=639&source=lnms&tbm=isch&sa=X&ved=0CAYQ_AUoAWoVChMIn-2Zma23yAIVyLqUCh3CdwBl'}",
+	"eta": "2018-02-08T08:36:18.186451+00:00",
+	"expires": "2018-02-08T09:36:18.186451+00:00",
+	"kwargs": "{u'foo': u'bar'}",
 	"type": "task-received",
 	"hostname": "celery@worker1.My-Mac.local",
 	"uuid": "8e42b71d-175b-47c1-52e8-0f2e82ddd9ba"
 }
+NOTES:
+	* Observed that "eta" is sometimes a string (newer versions of Celery shown above), others times an int (older versions of Celery)
+	* Observed that "expires" is sometimes a string (newer versions of Celery shown above), others times an int (older versions of Celery)
 
 Example event json (Task started):
 {
@@ -175,13 +182,12 @@ Example event json (Task succeeded):
 	"hostname": "celery@worker1.My-Mac.local",
 	"pid": 10837,
 	"utcoffset": -11,
-	"result": "\\"{'sourceUrl': u'https://www.google.com.au/search?q=nature&espv=2&biw=1216&bih=639&source=lnms&tbm=isch&sa=X&ved=0CAYQ_AUoAWoVChMIn-2Zma23yAIVyLqUCh3CdwBl', 'ingestCount': 23}\\"",
+	"result": "\\"{'theFoo': u'theBar', 'fooBarCount': 23}\\"",
 	"runtime": 0.004214855001919204,
 	"type": "task-succeeded"
 }
 
 Example event json (Task revoked):
-NOTE: It appears that "signum" is sometimes returned as a string and sometimes as an integer!!
 {
 	"type": "task-revoked",
 	"uuid": "9e4c1cf3-6b66-482e-5145-0eb4d12f91ab",
@@ -208,6 +214,8 @@ NOTE: It appears that "signum" is sometimes returned as a string and sometimes a
 	"signum": 15,
 	"expired": false
 }
+NOTES:
+	* Observed that "signum" is sometimes returned as a string and sometimes as an integer
 
 */
 
@@ -237,14 +245,17 @@ type TaskEvent struct {
 	// Result is a string containing the result of a completed task
 	Result string `json:"result, omitempty"`
 
-	// Runtime is a ...
+	// Runtime is the execution time
 	Runtime float32 `json:"runtime, omitempty"`
 
 	// Retries is the number of re-tries this task has performed
 	Retries int `json:"retries, omitempty"`
 
-	// ETA is the estimated time of completion
-	ETA int `json:"eta, omitempty"`
+	// ETA is the explicit time and date to run the retry at.
+	ETA interface{} `json:"eta, omitempty"`
+
+	// Expires is the datetime or seconds in the future for the task should expire
+	Expires interface{} `json:"expires, omitempty"`
 
 	// Exception is a string containing error/exception information
 	Exception string `json:"exception, omitempty"`
@@ -280,7 +291,8 @@ func NewTaskEvent() *TaskEvent {
 		Result:     "",
 		Runtime:    0,
 		Retries:    0,
-		ETA:        0,
+		ETA:        "",
+		Expires:    "",
 		Exception:  "",
 		Traceback:  "",
 		Terminated: false,
@@ -288,3 +300,8 @@ func NewTaskEvent() *TaskEvent {
 		Expired:    false,
 	}
 }
+
+/*
+TaskEventsList is an array of task events
+*/
+type TaskEventsList []TaskEvent
