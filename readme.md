@@ -114,3 +114,7 @@ If you modify the properties of any of the structs in `task_event.go` you will n
 ```bash
 $ easyjson -all task_event.go
 ```
+## Processing Redis Backend Result Automatically
+If you are using a Redis backend for storing results you can easily process new/updated entries by subscribing to Redis keyspace events. This will save polling for results, and is made convenient to integrate by using my golang helper package `go-redis-event-sink`, available at the repo [https://github.com/svcavallar/go-redis-event-sink](https://github.com/svcavallar/go-redis-event-sink)
+
+An example test on how to use are provided within the repository. Essentially, for Celery, just provide it with the celery task naming mask patten to watch: `celery-task-meta-*`
