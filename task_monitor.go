@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	// Package dependencies
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
 )
 
@@ -143,7 +143,7 @@ func (monitor *TaskMonitor) handle(deliveries <-chan amqp.Delivery, done chan er
 
 		d.Ack(false)
 
-		// This code is here purely for debugging ALL messages, and for extracting ones we are unsure of the json format!
+		// Debug code for ALL messages - useful for extracting ones we are unsure of the json format!
 		/*
 			log.Printf("Received %d bytes: [%v] %q",
 				len(d.Body),

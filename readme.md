@@ -2,15 +2,14 @@
 
 Golang client library for adding support for interacting and monitoring Celery workers and tasks.
 
-It provides functionality to place tasks on the task queue, as well
-as monitor both task and worker events.
+It provides functionality to place tasks on the task queue, as well as monitor both task and worker events.
 
 ## Dependencies
 
 This library depends upon the following packages:
 
 - github.com/streadway/amqp
-- github.com/Sirupsen/logrus
+- github.com/sirupsen/logrus
 - github.com/nu7hatch/gouuid
 - github.com/mailru/easyjson
 
@@ -109,12 +108,14 @@ This will create and dispatch a task incorporating the supplied data, and identi
 
 ## Modifying `task_event.go`
 
-If you modify the properties of any of the structs in `task_event.go` you will need to re-generate the `easyjson` version of this file. This is easily achieved by issuing the following command:
+If you modify the properties of any the structs in `task_event.go` you will need to re-generate the `easyjson` version of this file. This is easily achieved by issuing the following command:
 
 ```bash
-$ easyjson -all task_event.go
+$ easyjson -all task_eventtest.go
 ```
 ## Processing Redis Backend Result Automatically
-If you are using a Redis backend for storing results you can easily process new/updated entries by subscribing to Redis keyspace events. This will save polling for results, and is made convenient to integrate by using my golang helper package `go-redis-event-sink`, available at the repo [https://github.com/svcavallar/go-redis-event-sink](https://github.com/svcavallar/go-redis-event-sink)
 
-An example test on how to use are provided within the repository. Essentially, for Celery, just provide it with the celery task naming mask patten to watch: `celery-task-meta-*`
+If you are using a Redis backend for storing results you can easily process new/updated entries by subscribing to Redis keyspace events. 
+This will save polling for results, and is made convenient to integrate by using my golang helper package `go-redis-event-sink`, available at the repo [https://github.com/svcavallar/go-redis-event-sink](https://github.com/svcavallar/go-redis-event-sink)
+
+An example on how to use this is provided within the repository. Essentially, just provide it with the Celery task naming mask patten to watch: `celery-task-meta-*`

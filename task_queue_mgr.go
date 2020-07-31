@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
+	"crypto/tls"
 	// Package dependencies
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/streadway/amqp"
-    "strings"
-    "crypto/tls"
+	"strings"
 )
 
 /*
@@ -118,6 +118,7 @@ func (taskQueueMgr *TaskQueueMgr) publish(data interface{}, exchangeName string,
 
 /*
 DispatchTask places a new task on the Celery task queue
+
 Creates a new Task based on the supplied task name and data
 */
 func (taskQueueMgr *TaskQueueMgr) DispatchTask(taskName string, taskData map[string]interface{}, routingKey string) (*Task, error) {

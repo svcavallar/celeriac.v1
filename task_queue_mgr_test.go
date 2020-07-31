@@ -7,7 +7,7 @@ import (
 	"time"
 
 	// Package dependencies
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -73,7 +73,6 @@ func TestNewTaskQueueMgr(t *testing.T) {
 	// Go routine to dispatch a task at a regular time interval for the lifetime of the test
 	go func() {
 		dispatchStartTime := time.Now()
-
 		for {
 			dispatchElapsedTime := time.Since(dispatchStartTime)
 			if dispatchElapsedTime.Seconds() >= taskDispatchInterval.Seconds() {
