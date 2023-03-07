@@ -59,26 +59,27 @@ func (event *Event) TimestampFormatted() string {
 
 /*
 WorkerEvent defines an event emitted by workers, specific to its operation. Event "types" emitted are:
-	- "worker-online"
-	- "worker-offline"
-	- "worker-heartbeat"
+  - "worker-online"
+  - "worker-offline"
+  - "worker-heartbeat"
 
 Example worker event json:
-{
-	"sw_sys": "Darwin",
-	"clock": 74,
-	"timestamp": 1843965659.580637,
-	"hostname": "celery@worker1.My-Mac.local",
-	"pid": 10837,
-	"sw_ver": "3.1.18",
-	"utcoffset": -11,
-	"loadavg": [2.0, 2.41, 2.54],
-	"processed": 6,
-	"active": 0,
-	"freq": 2.0,
-	"type": "worker-offline",
-	"sw_ident": "py-celery"
-}
+
+	{
+		"sw_sys": "Darwin",
+		"clock": 74,
+		"timestamp": 1843965659.580637,
+		"hostname": "celery@worker1.My-Mac.local",
+		"pid": 10837,
+		"sw_ver": "3.1.18",
+		"utcoffset": -11,
+		"loadavg": [2.0, 2.41, 2.54],
+		"processed": 6,
+		"active": 0,
+		"freq": 2.0,
+		"type": "worker-offline",
+		"sw_ident": "py-celery"
+	}
 */
 type WorkerEvent struct {
 	Type      string  `json:"type"`
@@ -271,6 +272,12 @@ type TaskEvent struct {
 
 	// Expired is a flag indicating whether the task has expired due to factors
 	Expired bool `json:"expired, omitempty"`
+
+	// Routing key is value set by Celery to route task to proper queue
+	RoutingKey string `json:"routing_key,omitempty"`
+
+	// Queue may be set for a Celery task, as a rule cross-reference with RoutingKey
+	Queue string `json:"queue,omitempty"`
 }
 
 /*
@@ -298,6 +305,8 @@ func NewTaskEvent() *TaskEvent {
 		Terminated: false,
 		Signum:     "",
 		Expired:    false,
+		RoutingKey: "",
+		Queue:      "",
 	}
 }
 

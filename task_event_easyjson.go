@@ -17,7 +17,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV1(in *jlexer.Lexer, out *WorkerEvent) {
+func easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV1(in *jlexer.Lexer, out *WorkerEvent) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -28,7 +28,7 @@ func easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV1(in *jlexer.Lexer, out *
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -93,98 +93,53 @@ func easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV1(in *jlexer.Lexer, out *
 		in.Consumed()
 	}
 }
-func easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV1(out *jwriter.Writer, in WorkerEvent) {
+func easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV1(out *jwriter.Writer, in WorkerEvent) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
 		const prefix string = ",\"type\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.Type))
 	}
 	{
 		const prefix string = ",\"hostname\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Hostname))
 	}
 	{
 		const prefix string = ",\"timestamp\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float32(float32(in.Timestamp))
 	}
 	{
 		const prefix string = ",\"pid\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.PID))
 	}
 	{
 		const prefix string = ",\"clock\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.Clock))
 	}
 	{
 		const prefix string = ",\"utcoffset\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.UTCOffset))
 	}
 	{
 		const prefix string = ",\"sw_sys\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.SWSystem))
 	}
 	{
 		const prefix string = ",\"sw_ver\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.SWVersion))
 	}
 	{
 		const prefix string = ",\"loadavg\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if in.LoadAverage == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -200,42 +155,22 @@ func easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV1(out *jwriter.Writer, in
 	}
 	{
 		const prefix string = ",\"freq\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float32(float32(in.Freq))
 	}
 	{
 		const prefix string = ",\"sw_ident\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.SWIdentity))
 	}
 	{
 		const prefix string = ",\"processed\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.Processed))
 	}
 	{
 		const prefix string = ",\"active\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.Active))
 	}
 	out.RawByte('}')
@@ -244,27 +179,27 @@ func easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV1(out *jwriter.Writer, in
 // MarshalJSON supports json.Marshaler interface
 func (v WorkerEvent) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV1(&w, v)
+	easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV1(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v WorkerEvent) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV1(w, v)
+	easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV1(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *WorkerEvent) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV1(&r, v)
+	easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV1(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *WorkerEvent) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV1(l, v)
+	easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV1(l, v)
 }
-func easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV11(in *jlexer.Lexer, out *TaskEvent) {
+func easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV11(in *jlexer.Lexer, out *TaskEvent) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -275,7 +210,7 @@ func easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV11(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -341,6 +276,10 @@ func easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV11(in *jlexer.Lexer, out 
 			}
 		case "expired":
 			out.Expired = bool(in.Bool())
+		case "routing_key":
+			out.RoutingKey = string(in.String())
+		case "queue":
+			out.Queue = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -351,148 +290,78 @@ func easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV11(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV11(out *jwriter.Writer, in TaskEvent) {
+func easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV11(out *jwriter.Writer, in TaskEvent) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
 		const prefix string = ",\"type\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.Type))
 	}
 	{
 		const prefix string = ",\"hostname\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Hostname))
 	}
 	{
 		const prefix string = ",\"timestamp\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float32(float32(in.Timestamp))
 	}
 	{
 		const prefix string = ",\"pid\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.PID))
 	}
 	{
 		const prefix string = ",\"clock\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.Clock))
 	}
 	{
 		const prefix string = ",\"utcoffset\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.UTCOffset))
 	}
 	{
 		const prefix string = ",\"uuid\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.UUID))
 	}
 	{
 		const prefix string = ",\"name\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Name))
 	}
 	{
 		const prefix string = ",\"args\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Args))
 	}
 	{
 		const prefix string = ",\"kwargs\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Kwargs))
 	}
 	{
 		const prefix string = ",\"result\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Result))
 	}
 	{
 		const prefix string = ",\"runtime\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float32(float32(in.Runtime))
 	}
 	{
 		const prefix string = ",\"retries\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.Retries))
 	}
 	{
 		const prefix string = ",\"eta\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if m, ok := in.ETA.(easyjson.Marshaler); ok {
 			m.MarshalEasyJSON(out)
 		} else if m, ok := in.ETA.(json.Marshaler); ok {
@@ -503,12 +372,7 @@ func easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV11(out *jwriter.Writer, i
 	}
 	{
 		const prefix string = ",\"expires\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if m, ok := in.Expires.(easyjson.Marshaler); ok {
 			m.MarshalEasyJSON(out)
 		} else if m, ok := in.Expires.(json.Marshaler); ok {
@@ -519,42 +383,22 @@ func easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV11(out *jwriter.Writer, i
 	}
 	{
 		const prefix string = ",\"exception\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Exception))
 	}
 	{
 		const prefix string = ",\"traceback\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Traceback))
 	}
 	{
 		const prefix string = ",\"terminated\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.Terminated))
 	}
 	{
 		const prefix string = ",\"signum\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if m, ok := in.Signum.(easyjson.Marshaler); ok {
 			m.MarshalEasyJSON(out)
 		} else if m, ok := in.Signum.(json.Marshaler); ok {
@@ -565,13 +409,18 @@ func easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV11(out *jwriter.Writer, i
 	}
 	{
 		const prefix string = ",\"expired\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Bool(bool(in.Expired))
+	}
+	if in.RoutingKey != "" {
+		const prefix string = ",\"routing_key\":"
+		out.RawString(prefix)
+		out.String(string(in.RoutingKey))
+	}
+	if in.Queue != "" {
+		const prefix string = ",\"queue\":"
+		out.RawString(prefix)
+		out.String(string(in.Queue))
 	}
 	out.RawByte('}')
 }
@@ -579,27 +428,27 @@ func easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV11(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v TaskEvent) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV11(&w, v)
+	easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV11(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v TaskEvent) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV11(w, v)
+	easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV11(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *TaskEvent) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV11(&r, v)
+	easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV11(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *TaskEvent) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV11(l, v)
+	easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV11(l, v)
 }
-func easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV12(in *jlexer.Lexer, out *Event) {
+func easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV12(in *jlexer.Lexer, out *Event) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -610,7 +459,7 @@ func easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV12(in *jlexer.Lexer, out 
 	}
 	in.Delim('{')
 	for !in.IsDelim('}') {
-		key := in.UnsafeString()
+		key := in.UnsafeFieldName(false)
 		in.WantColon()
 		if in.IsNull() {
 			in.Skip()
@@ -648,78 +497,43 @@ func easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV12(in *jlexer.Lexer, out 
 		in.Consumed()
 	}
 }
-func easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV12(out *jwriter.Writer, in Event) {
+func easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV12(out *jwriter.Writer, in Event) {
 	out.RawByte('{')
 	first := true
 	_ = first
 	{
 		const prefix string = ",\"type\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix[1:])
 		out.String(string(in.Type))
 	}
 	{
 		const prefix string = ",\"hostname\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Hostname))
 	}
 	{
 		const prefix string = ",\"timestamp\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Float32(float32(in.Timestamp))
 	}
 	{
 		const prefix string = ",\"pid\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.PID))
 	}
 	{
 		const prefix string = ",\"clock\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.Clock))
 	}
 	{
 		const prefix string = ",\"utcoffset\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.Int(int(in.UTCOffset))
 	}
 	{
 		const prefix string = ",\"data\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		if m, ok := in.Data.(easyjson.Marshaler); ok {
 			m.MarshalEasyJSON(out)
 		} else if m, ok := in.Data.(json.Marshaler); ok {
@@ -734,23 +548,23 @@ func easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV12(out *jwriter.Writer, i
 // MarshalJSON supports json.Marshaler interface
 func (v Event) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV12(&w, v)
+	easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV12(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Event) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonE9c2c8caEncodeGithubComSvcavallarCeleriacV12(w, v)
+	easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV12(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Event) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV12(&r, v)
+	easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV12(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Event) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonE9c2c8caDecodeGithubComSvcavallarCeleriacV12(l, v)
+	easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV12(l, v)
 }
