@@ -224,7 +224,7 @@ NOTES:
 TaskEvent is the JSON schema for Celery task events
 */
 type TaskEvent struct {
-	Type      string  `json:"type"`
+	Type      string  `json:"type,intern"`
 	Hostname  string  `json:"hostname"`
 	Timestamp float32 `json:"timestamp"`
 	PID       int     `json:"pid"`
@@ -235,46 +235,34 @@ type TaskEvent struct {
 	UUID string `json:"uuid"`
 
 	// Name is the textual name of the task executed
-	Name string `json:"name, omitempty"`
+	Name string `json:"name,omitempty,intern"`
 
 	// Args is a string of the arguments passed to the task
-	Args string `json:"args, omitempty"`
+	Args string `json:"args,omitempty"`
 
 	// Kwargs is a string of the key-word arguments passed to the task
-	Kwargs string `json:"kwargs, omitempty"`
-
-	// Result is a string containing the result of a completed task
-	Result string `json:"result, omitempty"`
+	Kwargs string `json:"kwargs,omitempty"`
 
 	// Runtime is the execution time
-	Runtime float32 `json:"runtime, omitempty"`
+	Runtime float32 `json:"runtime,omitempty"`
 
 	// Retries is the number of re-tries this task has performed
-	Retries int `json:"retries, omitempty"`
+	Retries int `json:"retries,omitempty"`
 
 	// ETA is the explicit time and date to run the retry at.
-	ETA interface{} `json:"eta, omitempty"`
+	ETA interface{} `json:"eta,omitempty"`
 
 	// Expires is the datetime or seconds in the future for the task should expire
-	Expires interface{} `json:"expires, omitempty"`
-
-	// Exception is a string containing error/exception information
-	Exception string `json:"exception, omitempty"`
-
-	// Traceback is a string containing extended error information
-	Traceback string `json:"traceback, omitempty"`
+	Expires interface{} `json:"expires,omitempty"`
 
 	// Terminated is a flag indicating whether the task has been terminated
-	Terminated bool `json:"terminated, omitempty"`
+	Terminated bool `json:"terminated,omitempty"`
 
 	// Signum is the signal number
-	Signum interface{} `json:"signum, omitempty"`
+	Signum interface{} `json:"signum,omitempty"`
 
 	// Expired is a flag indicating whether the task has expired due to factors
-	Expired bool `json:"expired, omitempty"`
-
-	// Routing key is value set by Celery to route task to proper queue
-	RoutingKey string `json:"routing_key,omitempty"`
+	Expired bool `json:"expired,omitempty"`
 
 	// Queue may be set for a Celery task, as a rule cross-reference with RoutingKey
 	Queue string `json:"queue,omitempty"`
@@ -295,17 +283,13 @@ func NewTaskEvent() *TaskEvent {
 		UUID:       "",
 		Name:       "",
 		Args:       "",
-		Result:     "",
 		Runtime:    0,
 		Retries:    0,
 		ETA:        "",
 		Expires:    "",
-		Exception:  "",
-		Traceback:  "",
 		Terminated: false,
 		Signum:     "",
 		Expired:    false,
-		RoutingKey: "",
 		Queue:      "",
 	}
 }
