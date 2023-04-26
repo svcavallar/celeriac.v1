@@ -224,7 +224,7 @@ NOTES:
 TaskEvent is the JSON schema for Celery task events
 */
 type TaskEvent struct {
-	Type      string  `json:"type,intern"`
+	Type      string  `json:"type"`
 	Hostname  string  `json:"hostname"`
 	Timestamp float32 `json:"timestamp"`
 	PID       int     `json:"pid"`
@@ -235,7 +235,7 @@ type TaskEvent struct {
 	UUID string `json:"uuid"`
 
 	// Name is the textual name of the task executed
-	Name string `json:"name,omitempty,intern"`
+	Name string `json:"name,omitempty"`
 
 	// Args is a string of the arguments passed to the task
 	Args string `json:"args,omitempty"`

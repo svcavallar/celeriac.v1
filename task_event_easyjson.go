@@ -219,7 +219,7 @@ func easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV11(in *jlexer.Lexer, out *T
 		}
 		switch key {
 		case "type":
-			out.Type = string(in.StringIntern())
+			out.Type = string(in.String())
 		case "hostname":
 			out.Hostname = string(in.String())
 		case "timestamp":
@@ -233,7 +233,7 @@ func easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV11(in *jlexer.Lexer, out *T
 		case "uuid":
 			out.UUID = string(in.String())
 		case "name":
-			out.Name = string(in.StringIntern())
+			out.Name = string(in.String())
 		case "args":
 			out.Args = string(in.String())
 		case "kwargs":
