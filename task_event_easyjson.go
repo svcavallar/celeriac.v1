@@ -219,7 +219,7 @@ func easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV11(in *jlexer.Lexer, out *T
 		}
 		switch key {
 		case "type":
-			out.Type = string(in.String())
+			out.Type = string(in.StringIntern())
 		case "hostname":
 			out.Hostname = string(in.String())
 		case "timestamp":
@@ -233,13 +233,11 @@ func easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV11(in *jlexer.Lexer, out *T
 		case "uuid":
 			out.UUID = string(in.String())
 		case "name":
-			out.Name = string(in.String())
+			out.Name = string(in.StringIntern())
 		case "args":
 			out.Args = string(in.String())
 		case "kwargs":
 			out.Kwargs = string(in.String())
-		case "result":
-			out.Result = string(in.String())
 		case "runtime":
 			out.Runtime = float32(in.Float32())
 		case "retries":
@@ -260,10 +258,6 @@ func easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV11(in *jlexer.Lexer, out *T
 			} else {
 				out.Expires = in.Interface()
 			}
-		case "exception":
-			out.Exception = string(in.String())
-		case "traceback":
-			out.Traceback = string(in.String())
 		case "terminated":
 			out.Terminated = bool(in.Bool())
 		case "signum":
@@ -276,8 +270,6 @@ func easyjsonE9c2c8caDecodeGithubComMuckrackCeleriacV11(in *jlexer.Lexer, out *T
 			}
 		case "expired":
 			out.Expired = bool(in.Bool())
-		case "routing_key":
-			out.RoutingKey = string(in.String())
 		case "queue":
 			out.Queue = string(in.String())
 		default:
@@ -329,37 +321,32 @@ func easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV11(out *jwriter.Writer, in 
 		out.RawString(prefix)
 		out.String(string(in.UUID))
 	}
-	{
+	if in.Name != "" {
 		const prefix string = ",\"name\":"
 		out.RawString(prefix)
 		out.String(string(in.Name))
 	}
-	{
+	if in.Args != "" {
 		const prefix string = ",\"args\":"
 		out.RawString(prefix)
 		out.String(string(in.Args))
 	}
-	{
+	if in.Kwargs != "" {
 		const prefix string = ",\"kwargs\":"
 		out.RawString(prefix)
 		out.String(string(in.Kwargs))
 	}
-	{
-		const prefix string = ",\"result\":"
-		out.RawString(prefix)
-		out.String(string(in.Result))
-	}
-	{
+	if in.Runtime != 0 {
 		const prefix string = ",\"runtime\":"
 		out.RawString(prefix)
 		out.Float32(float32(in.Runtime))
 	}
-	{
+	if in.Retries != 0 {
 		const prefix string = ",\"retries\":"
 		out.RawString(prefix)
 		out.Int(int(in.Retries))
 	}
-	{
+	if in.ETA != nil {
 		const prefix string = ",\"eta\":"
 		out.RawString(prefix)
 		if m, ok := in.ETA.(easyjson.Marshaler); ok {
@@ -370,7 +357,7 @@ func easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV11(out *jwriter.Writer, in 
 			out.Raw(json.Marshal(in.ETA))
 		}
 	}
-	{
+	if in.Expires != nil {
 		const prefix string = ",\"expires\":"
 		out.RawString(prefix)
 		if m, ok := in.Expires.(easyjson.Marshaler); ok {
@@ -381,22 +368,12 @@ func easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV11(out *jwriter.Writer, in 
 			out.Raw(json.Marshal(in.Expires))
 		}
 	}
-	{
-		const prefix string = ",\"exception\":"
-		out.RawString(prefix)
-		out.String(string(in.Exception))
-	}
-	{
-		const prefix string = ",\"traceback\":"
-		out.RawString(prefix)
-		out.String(string(in.Traceback))
-	}
-	{
+	if in.Terminated {
 		const prefix string = ",\"terminated\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.Terminated))
 	}
-	{
+	if in.Signum != nil {
 		const prefix string = ",\"signum\":"
 		out.RawString(prefix)
 		if m, ok := in.Signum.(easyjson.Marshaler); ok {
@@ -407,15 +384,10 @@ func easyjsonE9c2c8caEncodeGithubComMuckrackCeleriacV11(out *jwriter.Writer, in 
 			out.Raw(json.Marshal(in.Signum))
 		}
 	}
-	{
+	if in.Expired {
 		const prefix string = ",\"expired\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.Expired))
-	}
-	if in.RoutingKey != "" {
-		const prefix string = ",\"routing_key\":"
-		out.RawString(prefix)
-		out.String(string(in.RoutingKey))
 	}
 	if in.Queue != "" {
 		const prefix string = ",\"queue\":"
